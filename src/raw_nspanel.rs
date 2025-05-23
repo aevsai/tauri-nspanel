@@ -1,7 +1,7 @@
 use bitflags::bitflags;
 use cocoa::{
     appkit::{NSView, NSViewHeightSizable, NSViewWidthSizable, NSWindowCollectionBehavior},
-    base::{id, nil, BOOL, YES},
+    base::{id, nil, BOOL, NO, YES},
     foundation::{NSRect, NSUInteger},
 };
 use objc::{
@@ -30,7 +30,9 @@ extern "C" {
 
 const CLS_NAME: &str = "RawNSPanel";
 
-pub struct RawNSPanel;
+pub struct RawNSPanel {
+    allow_become_key_window: bool,
+}
 
 unsafe impl Sync for RawNSPanel {}
 unsafe impl Send for RawNSPanel {}
@@ -43,8 +45,16 @@ impl INSObject for RawNSPanel {
 
 impl RawNSPanel {
     /// Returns YES to ensure that RawNSPanel can become a key window
-    extern "C" fn can_become_key_window(_: &Object, _: Sel) -> BOOL {
-        YES
+    extern "C" fn can_become_key_window(this: &Object, _: Sel) -> BOOL {
+        unsafe {
+            let ptr = this as *const _ as *mut RawNSPanel;
+            let panel = &*ptr;
+            if panel.allow_become_key_window {
+                YES
+            } else {
+                NO
+            }
+        }
     }
 
     extern "C" fn dealloc(this: &mut Object, _cmd: Sel) {
@@ -73,6 +83,10 @@ impl RawNSPanel {
         }
 
         cls.register()
+    }
+
+    pub fn set_allow_become_key_window(&mut self, allow: bool) {
+        self.allow_become_key_window = allow;
     }
 
     pub fn show(&self) {
