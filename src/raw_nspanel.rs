@@ -140,7 +140,7 @@ impl RawNSPanel {
     }
 
     pub fn set_style_mask(&self, style_mask: i32) {
-        let _: () = unsafe { msg_send![self, setStyleMask: style_mask] };
+        let _: () = unsafe { msg_send![self, styleMask: style_mask] };
     }
 
     pub fn set_collection_behaviour(&self, behaviour: NSWindowCollectionBehavior) {
@@ -172,7 +172,7 @@ impl RawNSPanel {
     }
 
     pub fn set_becomes_key_only_if_needed(&self, value: bool) {
-        let _: () = unsafe { msg_send![self, setBecomesKeyOnlyIfNeeded: value] };
+        let _: () = unsafe { msg_send![self, becomesKeyOnlyIfNeeded: value] };
     }
 
     pub fn set_works_when_modal(&self, value: bool) {
