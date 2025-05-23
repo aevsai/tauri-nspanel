@@ -30,9 +30,7 @@ extern "C" {
 
 const CLS_NAME: &str = "RawNSPanel";
 
-pub struct RawNSPanel {
-    allow_become_key_window: bool,
-}
+pub struct RawNSPanel {}
 
 unsafe impl Sync for RawNSPanel {}
 unsafe impl Send for RawNSPanel {}
@@ -45,16 +43,8 @@ impl INSObject for RawNSPanel {
 
 impl RawNSPanel {
     /// Returns YES to ensure that RawNSPanel can become a key window
-    extern "C" fn can_become_key_window(this: &Object, _: Sel) -> BOOL {
-        unsafe {
-            let ptr = this as *const _ as *mut RawNSPanel;
-            let panel = &*ptr;
-            if panel.allow_become_key_window {
-                YES
-            } else {
-                NO
-            }
-        }
+    extern "C" fn can_become_key_window(_: &Object, _: Sel) -> BOOL {
+        NO
     }
 
     extern "C" fn dealloc(this: &mut Object, _cmd: Sel) {
@@ -85,8 +75,8 @@ impl RawNSPanel {
         cls.register()
     }
 
-    pub fn set_allow_become_key_window(&mut self, allow: bool) {
-        self.allow_become_key_window = allow;
+    pub fn set_can_become_key(&self, value: bool) {
+        let _: () = unsafe { msg_send![self, canBecomeKeyWindow: value] };
     }
 
     pub fn show(&self) {
